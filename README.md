@@ -1,4 +1,4 @@
-test-jelastic
-=============
+appengine-skeleton
+=============================
 
-Repository containing a very basic JEE6 test of Jelastic Tomcat 7 offering
+This is a generated application from the appengine-skeleton archetype.
