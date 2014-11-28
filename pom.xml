@@ -224,7 +224,7 @@
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}${cloud.extension}-${project.version}</finalName>
+        <finalName>${project.artifactId}${cloud.extension}##${project.version}</finalName>
         <extensions>
             <extension>
                 <groupId>com.github.shyiko.servers-maven-extension</groupId>
@@ -321,7 +321,7 @@
                         <configuration>
                             <email>${jelastic.login}</email>
                             <password>${jelastic.password}</password>
-                            <context>${jelastic.testcontext}</context>
+                            <context>${project.artifactId}${cloud.extension}</context>
                             <environment>${jelastic.testenvironment}</environment>
                             <api_hoster>${jelastic.api_hoster}</api_hoster>
                             <comment>Maven publish or deploy of version ${project.version} (git : ${buildNumber}) by ${env.USER} at ${maven.build.timestamp}</comment>
