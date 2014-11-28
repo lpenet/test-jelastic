@@ -225,6 +225,8 @@
 
     <build>
         <finalName>${project.artifactId}${cloud.extension}##${project.version}</finalName>
+        <!-- this extension gives access to the server settings, defined in settings.xml, as properties
+            The var ${settings.servers.github.username} is used in this file -->
         <extensions>
             <extension>
                 <groupId>com.github.shyiko.servers-maven-extension</groupId>
@@ -233,6 +235,7 @@
             </extension>
         </extensions>
         <plugins>
+            <!-- display plugins and dependencies updates -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
@@ -247,6 +250,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- this plugin grants access such as the git hash of current version as property -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
@@ -272,6 +276,7 @@
                     <doUpdate>false</doUpdate>
                 </configuration>
             </plugin>
+            <!-- this plugin parameters the deployment to a repository in a local dir -->
             <plugin>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.1</version>
@@ -279,28 +284,19 @@
                     <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
                 </configuration>
             </plugin>
+            <!-- this plugin parse-version target grants access to the parts of the project.version as properties
+                we use it to check if the version is a release version (property parsedVersion.qualifier) -->
             <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.10</version>
-                <configuration>
-                    <message>Maven artifacts for ${project.version} (git : ${buildNumber}) by ${env.USER} at ${maven.build.timestamp}</message>
-                    <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
-                    <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
-                    <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
-                    <includes>
-                        <include>**/*</include>
-                    </includes>
-                    <repositoryName>test-jelastic</repositoryName>      <!-- github repo name -->
-                    <repositoryOwner>${settings.servers.github.username}</repositoryOwner>    <!-- github username  -->
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.9.1</version>
                 <executions>
-                    <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
                     <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
+                        <id>parse-version</id>
                         <phase>deploy</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -314,6 +310,8 @@
             </properties>
             <build>
                 <plugins>
+                    <!-- this plugin orchestrates deployment on the Jelastic platform -->
+                    <!-- jelastic.* properties should be defined in settings.xml -->
                     <plugin>
                         <groupId>com.jelastic</groupId>
                         <artifactId>jelastic-maven-plugin</artifactId>
@@ -337,6 +335,45 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+        <profile>
+            <id>deploy-github</id>
+            <activation>
+                <property>
+                    <name>parsedVersion.qualifier</name>
+                    <value></value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- deployment of build artifacts on github, in the mvn-repo branch -->
+                    <plugin>
+                        <groupId>com.github.github</groupId>
+                        <artifactId>site-maven-plugin</artifactId>
+                        <version>0.10</version>
+                        <configuration>
+                            <message>Maven artifacts for ${project.version} (git : ${buildNumber}) by ${env.USER} at ${maven.build.timestamp}</message>
+                            <noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+                            <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+                            <branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                            <repositoryName>test-jelastic</repositoryName>      <!-- github repo name -->
+                            <repositoryOwner>${settings.servers.github.username}</repositoryOwner>    <!-- github username  -->
+                        </configuration>
+                        <executions>
+                            <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+                            <execution>
+                                <goals>
+                                    <goal>site</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>    
         </profile>
     </profiles>
 </project>
