@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-<web-app version="3.0"
-         xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         metadata-complete="false">
-
-         
-</web-app>
-
+    <display-name>Application de test de Jelastic</display-name>
+    <welcome-file-list>
+        <welcome-file>accueil.xhtml</welcome-file>
+    </welcome-file-list>
+    <context-param>
+        <param-name>org.apache.myfaces.LOG_WEB_CONTEXT_PARAMS</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>org.apache.myfaces.EL_RESOLVER_COMPARATOR</param-name>
+        <param-value>org.apache.myfaces.el.unified.OpenWebBeansELResolverComparator</param-value>
+    </context-param>
+    <listener>
+        <listener-class>
+            org.apache.webbeans.servlet.WebBeansConfigurationListener
+        </listener-class>
+    </listener>
+     <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
+    </servlet-mapping>
+ </web-app>
